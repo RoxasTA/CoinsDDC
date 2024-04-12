@@ -10,6 +10,13 @@ import CoreData
 class CoreDataManager : ObservableObject, Observable{
 
     static var shared = CoreDataManager()
+    
+    var favCoins:[Coin]{
+        if let array = self.fetchItems(){
+            return array
+        }
+        return []
+    }
 
     // MARK: Carregar Core Data
     lazy var persistentContainer: NSPersistentContainer = {
@@ -24,14 +31,13 @@ class CoreDataManager : ObservableObject, Observable{
 
     // MARK: Salvar Contexto
     func saveContext() {
-        let context = persistentContainer.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Erro ao salvar o contexto: \(nserror), \(nserror.userInfo)")
-            }
+        let context = CoreDataManager.shared.persistentContainer.viewContext
+        do {
+            try context.save()
+            print("Salvou")
+        } catch {
+            let nserror = error as NSError
+            fatalError("Erro ao salvar o contexto: \(nserror), \(nserror.userInfo)")
         }
     }
 }
@@ -42,31 +48,36 @@ extension CoreDataManager{
     
     //Add Model here as parameter
     //Mudar pois nao sabemos quais atribuitos terão
-    func addCoin(){
+    func addCoin(name: String, favorite: Bool, currency : Currency){
+        let coin = Coin(context: CoreDataManager.shared.persistentContainer.viewContext)
+        coin.name = name
+        coin.favorite = favorite
+        coin.currency = currency.rawValue
+        let fethced = fetchItems()
         
+        saveContext()
         
+    }
+    
+//    Receive an item to delete
+    func deleteCoin(coin : Coin){
+        let context = persistentContainer.viewContext
+        context.delete(coin)
         saveContext()
     }
     
-    //Receive an item to delete
-//    func deleteCoin(coin : Coin){
-//        let context = persistentContainer.viewContext
-//        context.delete(coin)
-//        saveContext()
-//    }
-//    
-//    //Fetch a coin
-//    func fetchItems() -> [Coin]?{
-//        let context = persistentContainer.viewContext
-//        let request : NSFetchRequest<Coin> = NSFetchRequest(entityName: "Coin")
-//        
-//        do{
-//            let result : [Coin] = try context.fetch(request)
-//            return result
-//        }catch{
-//                print("Erro fetch in core data: \(error)")
-//        }
-//        return nil
-//    }
+    //Fetch a coin
+    func fetchItems() -> [Coin]?{
+        let context = CoreDataManager.shared.persistentContainer.viewContext
+        let request : NSFetchRequest<Coin> = NSFetchRequest(entityName: "Coin")
+        
+        do{
+            let result : [Coin] = try context.fetch(request)
+            return result
+        }catch{
+                print("Erro fetch in core data: \(error)")
+        }
+        return nil
+    }
 }
 

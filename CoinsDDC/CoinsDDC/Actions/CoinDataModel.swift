@@ -12,7 +12,21 @@ var APIKEY = "7233a6e524fe82e82687c8a8"
 @MainActor
 
 class CoinDataModel: ObservableObject{
-    @Published var exchange: CurrencyExchangeRate?
+    var exchange: CurrencyExchangeRate? {
+        didSet{
+            moedasSaveN = []
+            moedasSaveV = []
+            if let exchange = exchange{
+                for (key, value) in exchange.conversionRates{
+                    moedasSaveN.append(key)
+                    moedasSaveV.append(value)
+                }
+            }
+        }
+    }
+    @Published var moedasSaveN: [String] = []
+    @Published var moedasSaveV: [Double] = []
+    
     
     func fecthRates(currency: Currency) async throws {
         let endpoint = "https://v6.exchangerate-api.com/v6/7233a6e524fe82e82687c8a8/latest/\(currency)"

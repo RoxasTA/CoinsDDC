@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CurrencyExchangeRate: Codable {
+struct CurrencyExchangeRate: Codable, Hashable{
     let result: String
     let baseCode: String
     let conversionRates: [String: Double]

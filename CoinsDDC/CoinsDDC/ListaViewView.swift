@@ -7,99 +7,69 @@
 
 import SwiftUI
 
- struct Item: Identifiable {
-     var id = UUID()
-     var titulo: String
-     var descricao: String
-     var imagem: String
-     var favorito: Bool
- }
+struct Item: Identifiable, Hashable{
+    var id = UUID()
+    var titulo: String
+    var favorito: Bool
+    var tipo: Currency
+}
 
- struct ListaView: View {
-     
-     @Environment(\.managedObjectContext) var mangedObjContext
-     @StateObject var coinsDataModel = CoinDataModel()
-     @State  var Filtroligado = false
-     @State  var moedas = [
-         Item(titulo: "1", descricao: "", imagem: "Imagem 1", favorito: false),
-         Item(titulo: "2", descricao: "", imagem: "Imagem 2", favorito: false),
-         Item(titulo: "3", descricao: "", imagem: "Imagem 3", favorito: false),
-         Item(titulo: "4", descricao: "", imagem: "Imagem 4", favorito: false),
-         Item(titulo: "5", descricao: "", imagem: "Imagem 5", favorito: false),
-         Item(titulo: "6", descricao: "", imagem: "Imagem 6", favorito: false)
-     ]
-     
-     var body: some View {
-         NavigationView {
-             List {
-                 Toggle(isOn: $Filtroligado, label: {
-                     Text("Favoritos")
-                         .foregroundColor(.accentColor)
-                 })
-//                 ForEach(coinsDataModel.coins, id: .\self) { moeda in
-//                     Text(moeda.code)
-//                 }
-//                 Text(coinsDataModel.coins.BTCBRL.code)
-                 
-                 ForEach(moedas.filter {!Filtroligado || $0.favorito}) { moeda in
-                     NavigationLink(destination: DetalheItemView(moeda: moeda, moedas: $moedas)) {
-                         HStack {
-                             Image(systemName: "heart")
-                                 .foregroundColor(moeda.favorito ? .yellow : .gray)
-                             Text(moeda.titulo)
-                         }
-                     }
-                 }
-             }
-             .listStyle(InsetListStyle())
-             .navigationTitle("Lista de moedas")
-         }
-     }
- }
-
- struct DetalheItemView: View {
-     @State  var isFavorite: Bool
-     @Binding var moedas: [Item]
-     let moedaD: Item
-     
-     init(moeda: Item, moedas: Binding<[Item]>) {
-         self.moedaD = moeda
-         self._isFavorite = State(initialValue: moeda.favorito)
-         self._moedas = moedas
-     }
-     
-     var body: some View {
-         VStack {
-//             Image(moedaD.imagem)
-//                 .resizable()
-//                 .aspectRatio(contentMode: .fit)
-//                 .frame(height: 200)
-//             Text(moedaD.titulo)
-//                 .font(.title)
-//                 .fontWeight(.bold)
-//                 .padding()
-//             Text(moedaD.descricao)
-//                 .padding()
-             Button(action: {
-                 self.isFavorite.toggle()
-                 CoreDataManager().saveContext()
-                 if let index = moedas.firstIndex(where: { $0.id == moedaD.id }) {
-                     var mutableItem = moedaD
-                     mutableItem.favorito = self.isFavorite
-                     moedas[index] = mutableItem
-                 }
-             }) {
-                 Image(systemName: isFavorite ? "heart.fill" : "heart")
-                     .foregroundColor(isFavorite ? .red : .gray)
-                     .font(.title)
-             }
-             .padding()
-         }
-         .navigationTitle(moedaD.titulo)
-     }
- }
-
+struct ListaView: View {
+    
+    @State var coreDataSave : CoreDataManager = CoreDataManager()
+    @StateObject var coinsDataModel = CoinDataModel()
+    @State var moedas: [Item] = []
+    @State var moedasFavoritas : [Item] = []
+    
+    var body: some View {
+        VStack{
+            List {
+                
+                
+                ForEach(0..<moedas.count , id: \.self) { i in
+                    NavigationLink {
+                        DetalheItemView(coreDataSave: $coreDataSave, moedaD: $moedas[i])
+                    } label: {
+                        HStack {
+                            Text(moedas[i].titulo)
+                        }
+                    }
+                    
+                }
+                
+            }
+            .listStyle(InsetListStyle())
+            .navigationTitle("Lista de moedas")
+            //         }
+        }.onAppear(perform: {
+            self.moedas = []
+            let coreDataFetch = coreDataSave.fetchItems()
+            guard let fetched = coreDataFetch else{return}
+            
+            for currency in Currency.allCases{
+                let item = Item(titulo: currency.rawValue, favorito: false, tipo: currency)
+                moedas.append(item)
+            }
+            
+            for item in fetched{
+                if moedas.contains(where: {
+                    $0.tipo.rawValue == item.currency
+                }){
+                    for index in 0..<self.moedas.count{
+                        if moedas[index].tipo.rawValue == item.currency{
+                            self.moedas[index].favorito = true
+                        }
+                    }
+                }
+            }
+            
+            
+        })
+    }
+}
 #Preview {
-    ListaView()
+    NavigationView(content: {
+        ListaView()
+    })
 }
 

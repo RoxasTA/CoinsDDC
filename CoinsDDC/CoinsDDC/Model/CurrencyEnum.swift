@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Currency: String{
+enum Currency: String, CaseIterable{
     case AED = "UAE Dirham"
     case AFN = "Afghan Afghani"
     case ALL = "Albanian Lek"

@@ -16,8 +16,8 @@ struct ContentView: View {
                         Text("Lista de Moedas")
                     }
                     
-                    NavigationLink(destination: ListaView()) {
-                        Text("Converter Valores")
+                    NavigationLink(destination: FavoritosView()) {
+                        Text("Favoritos")
                     }
                 }
             }
