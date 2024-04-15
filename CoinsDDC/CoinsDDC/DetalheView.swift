@@ -14,30 +14,24 @@ struct DetalheItemView: View {
 
     var body: some View {
         VStack {
+            // botão para salvar como favorito e jogar essa alteração no core data
             Button(action: {
                 self.moedaD.favorito.toggle()
                 coreDataSave.addCoin(name: moedaD.titulo, favorite: moedaD.favorito, currency: moedaD.tipo)
 
-//                }
             }) {
                 Image(systemName: moedaD.favorito ? "heart.fill" : "heart")
                     .foregroundColor(moedaD.favorito ? .red : .gray)
                     .font(.title)
             }
             .padding()
-            
+            // fazer a busca da moeda a qual deseja ver o valor comparado
             TextField("1", text: $value)
                 .padding()
                 .keyboardType(.numberPad)
                 .textFieldStyle(.roundedBorder)
-            
-//            if let detalhes = netWork.exchange{
-//                
-////                ForEach(detalhes.conversionRates, id: \.self) {i in
-////                    Text(detalhes.conversionRates[i])
-////                }
-//            }
             List{
+                // monta a lista com os valores retornados da api
                 if !netWork.moedasSaveN.isEmpty{
                     ForEach(0..<netWork.moedasSaveN.count){ i in
                         HStack{
@@ -56,6 +50,7 @@ struct DetalheItemView: View {
             }
         }
         .navigationTitle(moedaD.titulo)
+        // faz com que a variavel tipo receba os tipos de moedas
         .onAppear(perform: {
             Task{
                 do{

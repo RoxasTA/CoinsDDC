@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+// enum de todas as moedas disponiveis
 enum Currency: String, CaseIterable{
     case AED = "UAE Dirham"
     case AFN = "Afghan Afghani"

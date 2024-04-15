@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
+        // Definisam da navegação
         NavigationView {
+            // Estrutura de lista feita por seções
             Form {
                 Section(header: Text("Telas")) {
                     NavigationLink(destination: ListaView()) {
@@ -22,6 +24,7 @@ struct ContentView: View {
                 }
             }
             .navigationTitle("Coins")
+            // Estilo da lista
             .listStyle(InsetGroupedListStyle())
         }
     }

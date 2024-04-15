@@ -18,7 +18,7 @@ class CoreDataManager : ObservableObject, Observable{
         return []
     }
 
-    // MARK: Carregar Core Data
+// conteiner do core data
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: "CoinModel")
         container.loadPersistentStores { (_, error) in
@@ -29,7 +29,7 @@ class CoreDataManager : ObservableObject, Observable{
         return container
     }()
 
-    // MARK: Salvar Contexto
+// função para salvar o contexto
     func saveContext() {
         let context = CoreDataManager.shared.persistentContainer.viewContext
         do {
@@ -46,8 +46,7 @@ class CoreDataManager : ObservableObject, Observable{
 //Funções para manipular dados do CoreData
 extension CoreDataManager{
     
-    //Add Model here as parameter
-    //Mudar pois nao sabemos quais atribuitos terão
+    // adiciona a moeda
     func addCoin(name: String, favorite: Bool, currency : Currency){
         let coin = Coin(context: CoreDataManager.shared.persistentContainer.viewContext)
         coin.name = name
@@ -59,14 +58,14 @@ extension CoreDataManager{
         
     }
     
-//    Receive an item to delete
+//    deleta a moeda
     func deleteCoin(coin : Coin){
         let context = persistentContainer.viewContext
         context.delete(coin)
         saveContext()
     }
     
-    //Fetch a coin
+    //Fetch da moeda
     func fetchItems() -> [Coin]?{
         let context = CoreDataManager.shared.persistentContainer.viewContext
         let request : NSFetchRequest<Coin> = NSFetchRequest(entityName: "Coin")

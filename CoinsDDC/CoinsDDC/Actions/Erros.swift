@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+// erros que podem ocorrer relacionados a API
 enum Erros: Error{
     case invalidURL
     case invalidResponce

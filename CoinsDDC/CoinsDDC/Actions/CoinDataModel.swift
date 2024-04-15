@@ -7,10 +7,11 @@
 
 import Foundation
 
+// chave da API
 var APIKEY = "7233a6e524fe82e82687c8a8"
 
+// evita erros da API
 @MainActor
-
 class CoinDataModel: ObservableObject{
     var exchange: CurrencyExchangeRate? {
         didSet{
@@ -27,7 +28,7 @@ class CoinDataModel: ObservableObject{
     @Published var moedasSaveN: [String] = []
     @Published var moedasSaveV: [Double] = []
     
-    
+    // faz o retorno da API e ve a resposta da API
     func fecthRates(currency: Currency) async throws {
         let endpoint = "https://v6.exchangerate-api.com/v6/7233a6e524fe82e82687c8a8/latest/\(currency)"
         guard let url = URL(string: endpoint) else {throw Erros.invalidURL}
@@ -36,6 +37,7 @@ class CoinDataModel: ObservableObject{
             throw Erros.invalidResponce
         }
         do{
+            // decodifica o arquivo JSON
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
             self.exchange = try decoder.decode(CurrencyExchangeRate.self, from: data)

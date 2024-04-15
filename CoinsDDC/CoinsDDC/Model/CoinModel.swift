@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+// atributos os quais a api retorna
 struct CurrencyExchangeRate: Codable, Hashable{
     let result: String
     let baseCode: String
